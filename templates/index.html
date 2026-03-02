@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GitHub Webhook Events</title>
+    <style>
+        body { font-family: Arial; padding: 40px; }
+        .event { margin-bottom: 15px; padding: 10px; border-bottom: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+
+<h2>GitHub Events</h2>
+<div id="events"></div>
+
+<script>
+async function fetchEvents() {
+    const response = await fetch('/events');
+    const data = await response.json();
+
+    const container = document.getElementById('events');
+    container.innerHTML = '';
+
+    data.forEach(event => {
+        let text = '';
+
+        if (event.action === "PUSH") {
+            text = `${event.author} pushed to ${event.to_branch} on ${event.timestamp}`;
+        }
+        else if (event.action === "PULL_REQUEST") {
+            text = `${event.author} submitted a pull request from ${event.from_branch} to ${event.to_branch} on ${event.timestamp}`;
+        }
+        else if (event.action === "MERGE") {
+            text = `${event.author} merged branch ${event.from_branch} to ${event.to_branch} on ${event.timestamp}`;
+        }
+
+        container.innerHTML += `<div class="event">${text}</div>`;
+    });
+}
+
+fetchEvents();
+setInterval(fetchEvents, 15000);
+</script>
+
+</body>
+</html>
